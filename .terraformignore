@@ -1,0 +1,34 @@
+# controls what directories get uploaded to TFC for remote runs
+#
+# deny by default
+*
+# explicitly list included directories
+!terraform/
+terraform/.terraform/providers/**
+
+# Ignore Terraform state files
+*.tfstate
+*.tfstate.*
+
+# Ignore Terraform configuration files
+*.tfvars
+*.tfvars.json
+
+# Ignore local Terraform directories
+.terraform/
+.terraform.lock.hcl
+
+# Ignore backup files
+*.backup
+*.bak
+
+# Ignore log files
+*.log
+
+# Ignore temporary files
+*.tmp
+*.swp
+
+# Ignore json
+
+*.json
