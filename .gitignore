@@ -35,3 +35,7 @@ override.tf.json
 # Nếu dùng IntelliJ/IDEA
 .idea/
 
+# deny file
+server-cluster1-222379c0c7d8.json
+id_rsa
+*.pub

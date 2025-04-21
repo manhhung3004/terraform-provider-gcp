@@ -1,7 +1,3 @@
-# output "network_subnet_ids" {
-#   value = module.network.subnet_ids
-# }
-
 output "compute_instance_ids" {
   value = module.compute.instance_ids
 }
