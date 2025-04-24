@@ -1,19 +1,36 @@
+variable "project" {
+  type = string
+}
+
+
 variable "network_name" {
-  description = "Tên network"
+  description = "network name"
   type        = string
   default     = "my-network"
 }
 
 variable "subnet_name_prefix" {
-  description = "Tiền tố cho tên subnets"
+  description = "subnets name"
   type        = string
   default     = "subnet"
 }
 
-variable "subnet_cidrs" {
-  description = "Danh sách CIDR cho subnets"
+variable "vpc_cidr" {
+  description = "List CIDR for subnets"
   type        = list(string)
   default     = ["10.0.1.0/24", "10.0.2.0/24"]
+}
+
+variable "private_subnets" {
+  type = list(string)
+}
+
+variable "public_subnets" {
+  type = list(string)
+}
+
+variable "database_subnets" {
+  type = list(string)
 }
 
 variable "region" {
@@ -23,25 +40,25 @@ variable "region" {
 }
 
 variable "firewall_name" {
-  description = "Tên firewall"
+  description = "firewall name"
   type        = string
   default     = "default-firewall"
 }
 
 variable "allowed_tcp_ports" {
-  description = "Danh sách các cổng TCP được phép"
+  description = "List TCP port allow"
   type        = list(string)
   default     = ["22", "80", "443"]
 }
 
 variable "allowed_udp_ports" {
-  description = "Danh sách các cổng UDP được phép"
+  description = "List UDP port allow"
   type        = list(string)
   default     = []
 }
 
 variable "source_ranges" {
-  description = "Danh sách các source ranges cho firewall"
+  description = "List source ranges for firewall"
   type        = list(string)
   default     = ["0.0.0.0/0"]
 }

@@ -1,29 +1,39 @@
-resource "google_compute_network" "network" {
-  name                    = var.network_name
-  auto_create_subnetworks = false
+module "vpc" {
+  source  = "terraform-google-modules/network/google//modules/vpc"
+  version = "36.2.0"
+
+  name = "${var.project}-vpc"
+  cidr = var.vpc_cidr
+
+  private_subnets  = var.private_subnets
+  public_subnets   = var.public_subnets
+  database_subnets = var.database_subnets
+
+  create_database_subnet_group = true
+  enable_nat_gateway           = true
+  single_nat_gateway           = true
 }
 
-resource "google_compute_subnetwork" "subnetwork" {
-  count         = length(var.subnet_cidrs)
-  name          = "${var.subnet_name_prefix}-${count.index + 1}"
-  ip_cidr_range = element(var.subnet_cidrs, count.index)
-  region        = var.region
-  network       = google_compute_network.network.id
-}
+module "allow_http" {
+  source  = "terraform-google-modules/network/google//modules/firewall-rules"
+  version = "6.1.0"
 
-resource "google_compute_firewall" "firewall" {
-  name    = var.firewall_name
-  network = google_compute_network.network.id
+  project_id = var.project
+  network    = module.vpc.network_name
 
-  allow {
-    protocol = "tcp"
-    ports    = var.allowed_tcp_ports
-  }
-
-  allow {
-    protocol = "udp"
-    ports    = var.allowed_udp_ports
-  }
-
-  source_ranges = var.source_ranges
+  rules = [
+    {
+      name        = "allow-http"
+      description = "Allow HTTP traffic from any source"
+      direction   = "INGRESS"
+      priority    = 1000
+      ranges      = ["0.0.0.0/0"]
+      allow = [
+        {
+          protocol = "tcp"
+          ports    = ["80"]
+        }
+      ]
+    }
+  ]
 }
