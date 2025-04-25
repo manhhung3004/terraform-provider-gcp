@@ -16,7 +16,7 @@ module "vpc" {
 
 module "allow_http" {
   source  = "terraform-google-modules/network/google//modules/firewall-rules"
-  version = "6.1.0"
+  version = "10.0.0"
 
   project_id = var.project
   network    = module.vpc.network_name
@@ -40,7 +40,7 @@ module "allow_http" {
 
 module "allow_http_web_sg" {
   source  = "terraform-google-modules/network/google//modules/firewall-rules"
-  version = "6.1.0"
+  version = "10.0.0"
 
   project_id = var.project
   network    = module.vpc.network_name
@@ -65,7 +65,7 @@ module "allow_http_web_sg" {
 
 module "allow_db_sg" {
   source  = "terraform-google-modules/network/google//modules/firewall-rules"
-  version = "6.1.0"
+  version = "10.0.0"
 
   project_id = var.project
   network    = module.vpc.network_name
