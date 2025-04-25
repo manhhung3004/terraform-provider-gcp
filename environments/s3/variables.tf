@@ -21,3 +21,8 @@ variable "bucket_prefix" {
   type        = string
   default     = "buckets-hungnm" # Thay đổi giá trị mặc định nếu cần
 }
+
+variable "gcp-access-token" {
+  description = "GCP access token"
+  type        = string
+}
