@@ -2,7 +2,6 @@ variable "project" {
   type = string
 }
 
-
 variable "network_name" {
   description = "network name"
   type        = string
