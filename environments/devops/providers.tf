@@ -1,13 +1,5 @@
 # This file configures the Google Cloud provider for Terraform.
 terraform {
-  cloud {
-
-    organization = "terraform-provider-gcp"
-
-    workspaces {
-      name = "terraform-provider-gcp-ws"
-    }
-  }
   required_providers {
     google = {
       source  = "hashicorp/google"
