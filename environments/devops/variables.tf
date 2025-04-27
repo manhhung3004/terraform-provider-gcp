@@ -44,7 +44,7 @@ variable "gke_name_pod" {
   type        = string
 }
 
-variable "gcp-access-token" {
-  description = "GCP access token"
-  type        = string
-}
+# variable "gcp-access-token" {
+#   description = "GCP access token"
+#   type        = string
+# }

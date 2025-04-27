@@ -3,7 +3,7 @@ module "gke" {
     gcp_project_id = var.gcp_project_id
     gcp_region = var.gcp_region
     gcp_zone = var.gcp_zone
-    gke_name = var.gke_name
+    gke_name = "gke-cluster"
     gke_network = var.gke_network
     gke_subnetwork = var.gke_subnetwork
     gke_ip_range_pods = var.gke_ip_range_pods

@@ -36,7 +36,7 @@ override.tf.json
 .idea/
 
 # deny file
-server-cluster1-222379c0c7d8.json
 server-cluster1-957f0f56b13d.json
+server-cluster1-222379c0c7d8.json
 id_rsa
 *.pub

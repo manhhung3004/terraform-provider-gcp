@@ -54,63 +54,64 @@ module "storage" {
 }
 
 ######## # GKE CLUSTER MODULE #########
-module "gke-cluster" {
-  source        = "../../modules/gke-cluster"
-  location     = var.gcp_region
-  project       = var.gcp_project_id
-  name          = var.cluster_name
-  network       = module.vpc.vpc_name
-  subnetwork    = module.vpc.subnet_a_id
-}
 
-resource "google_container_node_pool" "node_pool" {
-  name     = "private-pool"
-  project  = var.gcp_project_id
-  location = var.gcp_region
-  cluster  = module.gke-cluster.cluster_name
+# module "gke-cluster" {
+#   source        = "../../modules/gke-cluster"
+#   location     = var.gcp_region
+#   project       = var.gcp_project_id
+#   name          = var.cluster_name
+#   network       = module.vpc.vpc_name
+#   subnetwork    = module.vpc.subnet_a_id
+# }
 
-  initial_node_count = 1
+# resource "google_container_node_pool" "node_pool" {
+#   name     = "private-pool"
+#   project  = var.gcp_project_id
+#   location = var.gcp_region
+#   cluster  = module.gke-cluster.cluster_name
 
-  autoscaling {
-    min_node_count = 1
-    max_node_count = 3
-  }
+#   initial_node_count = 1
 
-  management {
-    auto_repair  = true
-    auto_upgrade = true
-  }
+#   autoscaling {
+#     min_node_count = 1
+#     max_node_count = 3
+#   }
 
-  node_config {
-    image_type   = "COS_CONTAINERD"
-    machine_type = "e2-standard-2"
+#   management {
+#     auto_repair  = true
+#     auto_upgrade = true
+#   }
 
-    labels = {
-      private-pools-example = "true"
-    }
+#   node_config {
+#     image_type   = "COS_CONTAINERD"
+#     machine_type = "e2-standard-2"
 
-    tags = [
-      "private-pool-example",
-    ]
+#     labels = {
+#       private-pools-example = "true"
+#     }
 
-    # disk_size_gb = 20
-    # disk_type    = "pd-standard"
-    # preemptible  = false
+#     tags = [
+#       "private-pool-example",
+#     ]
 
-    # service_account = module.gke_service_account.email
+#     # disk_size_gb = 20
+#     # disk_type    = "pd-standard"
+#     # preemptible  = false
 
-    oauth_scopes = [
-      "https://www.googleapis.com/auth/cloud-platform",
-    ]
-  }
+#     # service_account = module.gke_service_account.email
 
-  lifecycle {
-    ignore_changes = [initial_node_count]
-  }
+#     oauth_scopes = [
+#       "https://www.googleapis.com/auth/cloud-platform",
+#     ]
+#   }
 
-  timeouts {  
-    create = "30m"
-    update = "30m"
-    delete = "30m"
-  }
-}
+#   lifecycle {
+#     ignore_changes = [initial_node_count]
+#   }
+
+#   timeouts {  
+#     create = "30m"
+#     update = "30m"
+#     delete = "30m"
+#   }
+# }
