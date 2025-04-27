@@ -14,6 +14,8 @@ module "vpc" {
   single_nat_gateway           = true
 }
 
+
+
 module "allow_http" {
   source  = "terraform-google-modules/network/google//modules/firewall-rules"
   version = "10.0.0"
