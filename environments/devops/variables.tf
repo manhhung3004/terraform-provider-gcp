@@ -16,8 +16,35 @@ variable "gcp_zone" {
   default     = "us-central1"
 }
 
-variable "bucket_prefix" {
-  description = "Prefix for GCS bucket names to ensure uniqueness"
+variable "gke_name" {
+  description = "Tên của GKE cluster"
   type        = string
-  default     = "buckets-hungnm" # Thay đổi giá trị mặc định nếu cần
+}
+
+variable "gke_network" {
+  description = "name VPC network"
+  type        = string
+}
+
+variable "gke_subnetwork" {
+  description = "name VPC subnetwork"
+  type        = string
+}
+variable "gke_ip_range_pods" {
+  description = "name VPC ip range pods"
+  type        = string
+}
+variable "gke_ip_range_services" {
+  description = "name VPC ip range services"
+  type        = string
+}
+
+variable "gke_name_pod" {
+  description = "Tên của GKE node pool"
+  type        = string
+}
+
+variable "gcp-access-token" {
+  description = "GCP access token"
+  type        = string
 }

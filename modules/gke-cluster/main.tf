@@ -1,84 +1,90 @@
-# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# DEPLOY A GKE CLUSTER
-# This module deploys a GKE cluster, a managed, production-ready environment for deploying containerized applications.
+# google_client_config and kubernetes provider must be explicitly specified like the following.
+data "google_client_config" "default" {}
 
-resource "google_container_cluster" "cluster" {
-  name        = var.name
-  description = var.description
+module "gke" {
+  source                     = "terraform-google-modules/kubernetes-engine/google"
+  project_id                 = var.gcp_project_id
+  name                       = var.gke_name
+  region                     = var.gcp_region
+  zones                      = var.gcp_zone
+  network                    = var.gke_network
+  subnetwork                 = var.gke_subnetwork
+  ip_range_pods              = var.gke_ip_range_pods
+  ip_range_services          = var.gke_ip_range_services
+  http_load_balancing        = false
+  network_policy             = false
+  horizontal_pod_autoscaling = true
+  filestore_csi_driver       = false
+  dns_cache                  = false
 
-  project    = var.project
-  location   = var.location
-  network    = var.network
-  subnetwork = var.subnetwork
+  node_pools = [
+    {
+      name                        = var.gke_name_pod
+      machine_type                = "e2-standard-2"
+      node_locations              = "us-central1-b,us-central1-c"
+      min_count                   = 1
+      max_count                   = 5
+      local_ssd_count             = 0
+      spot                        = true ## using spot instance
+      disk_size_gb                = 100
+      disk_type                   = "pd-standard"
+      image_type                  = "COS_CONTAINERD"
+      enable_gcfs                 = false
+      enable_gvnic                = false
+      logging_variant             = "DEFAULT"
+      auto_repair                 = true
+      auto_upgrade                = true
+      service_account             = "project-service-account@${var.gcp_project_id}.iam.gserviceaccount.com"
+      preemptible                 = false
+      initial_node_count          = 80
+      accelerator_count           = 1
+      accelerator_type            = "nvidia-l4"
+      gpu_driver_version          = "LATEST"
+      gpu_sharing_strategy        = "TIME_SHARING"
+      max_shared_clients_per_gpu = 2
+    },
+  ]
 
-  logging_service    = var.logging_service
-  monitoring_service = var.monitoring_service
-  min_master_version = local.kubernetes_version
-
-  enable_legacy_abac = false # Disable legacy ABAC for security
-
-  remove_default_node_pool = true
-  initial_node_count       = 1
-
-  private_cluster_config {
-    enable_private_endpoint = var.disable_public_endpoint
-    enable_private_nodes    = var.enable_private_nodes
-    master_ipv4_cidr_block  = var.master_ipv4_cidr_block
-  }
-
-  addons_config {
-    http_load_balancing {
-      disabled = !var.http_load_balancing
-    }
-
-    horizontal_pod_autoscaling {
-      disabled = !var.horizontal_pod_autoscaling
-    }
-
-    network_policy_config {
-      disabled = !var.enable_network_policy
-    }
-  }
-
-  network_policy {
-    enabled  = var.enable_network_policy
-    provider = var.enable_network_policy ? "CALICO" : "PROVIDER_UNSPECIFIED"
-  }
-
-  vertical_pod_autoscaling {
-    enabled = var.enable_vertical_pod_autoscaling
-  }
-
-  maintenance_policy {
-    daily_maintenance_window {
-      start_time = var.maintenance_start_time
-    }
-  }
-
-  lifecycle {
-    ignore_changes = [
-      node_config,
+  node_pools_oauth_scopes = {
+    all = [
+      "https://www.googleapis.com/auth/logging.write",
+      "https://www.googleapis.com/auth/monitoring",
     ]
   }
 
-  resource_labels = var.resource_labels
-}
+  node_pools_labels = {
+    all = {}
 
-# ---------------------------------------------------------------------------------------------------------------------
-# Prepare locals to keep the code cleaner
-# ---------------------------------------------------------------------------------------------------------------------
+    default-node-pool = {
+      default-node-pool = true
+    }
+  }
 
-locals {
-  latest_version     = data.google_container_engine_versions.location.latest_master_version
-  kubernetes_version = var.kubernetes_version != "latest" ? var.kubernetes_version : local.latest_version
-  network_project    = var.network_project != "" ? var.network_project : var.project
-}
+  node_pools_metadata = {
+    all = {}
 
-# ---------------------------------------------------------------------------------------------------------------------
-# Pull in data
-# ---------------------------------------------------------------------------------------------------------------------
+    default-node-pool = {
+      node-pool-metadata-custom-value = "gke-node-pool"
+    }
+  }
 
-data "google_container_engine_versions" "location" {
-  location = var.region
-  project  = var.project
+  node_pools_taints = {
+    all = []
+
+    default-node-pool = [
+      {
+        key    = "default-node-pool"
+        value  = true
+        effect = "PREFER_NO_SCHEDULE"
+      },
+    ]
+  }
+
+  node_pools_tags = {
+    all = []
+
+    default-node-pool = [
+      "default-node-pool",
+    ]
+  }
 }
